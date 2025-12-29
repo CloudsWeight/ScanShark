@@ -14,13 +14,14 @@ import fmath
 import random
 
 app = FastAPI()
-fx = fmath.Fx()
-to_df = fx.df_rates
+#logic here
 
 @app.get("/", tags=["Root"])
 async def read_root():
+ """OLD Boilerplate code for FastAPI endpoints 
     pair = random.choice(['eurusd', 'usdjpy', 'eurgbp', 'eurusd', 'chfjpy'])
     rates = fx.get_rates(pair, 'H1', 30)
     #df = to_df(rates)
     return {"rates": rates
             }
+""" 
