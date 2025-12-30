@@ -1,0 +1,26 @@
+name: ScanShark 
+
+run-name: ${{ github.actor}} ScanShark scanning code
+
+on: 
+  push:
+    jobs:
+      check-bats-version:
+        name: ScanShark version
+        runs-on: ubuntu-latest
+        steps:
+          - name: Checkout repository
+            uses: actions/checkout@v4 
+
+          - name: run ScanShark
+            id: scanner
+            uses: ./
+            with: 
+              fail-on-critical: true
+              fail-on-high: false
+              scan-lockfiles: true
+              output-format: sarif
+
+          
+
+    
