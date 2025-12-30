@@ -1,0 +1,33 @@
+version: "0.3"
+services:
+  
+  api:
+    build: ./api 
+    ports:
+        - "43451:43451"
+    depends_on:
+        - mongodb
+    networks:
+        - app-net
+
+  fastapi:
+    build: ./fastapi
+    ports:
+        - "3000:3000"
+    depends_on:
+        - mongodb
+    networks:
+        - app-net
+    environment:
+        - MONGO_URI=mongodb://mongodb:27017
+    volumes:
+        - ./fastapi:/app
+
+volumes:
+    fastapi:
+        external: false
+
+networks:
+  app-net:
+    driver: bridge
+  
