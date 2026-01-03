@@ -1,19 +1,24 @@
+'''Orchestrator - 
+
+Need to fix import scanners syntax/layout when running with uvicorn vs testing
+'''
 import asyncio
 import tempfile
 import shutil
 import logging
 from pathlib import Path
 from typing import Dict, List
-from git import Repo
+from git import Repo,GitCommandError
 import os
-
-from app.services.scanners import (
+from datetime import datetime, timezone
+from .scanners import (
     bandit,
     semgrep,
     secrets,
     trivy,
     ripgrep
     )
+from services.clone import clone
 
 logger = logging.getLogger(__name__)
 
@@ -21,13 +26,14 @@ async def run_full_scan(repo_url: str, repo_name: str, commit_sha: str) -> Dict:
     logger.info(f"Starting scan for: {repo_name}@{commit_sha}")
     print(f"Starting scan for: {repo_name}@{commit_sha}")
 
-    temp_dir = tempfile.mkdtemp(prefix='scan_')
-    print(temp_dir)
+    base_dir = os.path.dirname(os.path.abspath(__file__))  # this will be fastapi\app\services\scanners
+    temp_dir = os.path.join(base_dir, "scan_repo")  
+    print(temp_dir) 
 
     try:
         logger.info(f"Cloning: {repo_url} to {temp_dir}")
         print(f"Cloning: {repo_url} to {temp_dir}")
-        repo = Repo.clone_from(repo_url, temp_dir, depth=2)
+        repo = Repo.clone_from(repo_url, temp_dir, branch="main")
         logger.info("Starting parallel scans...")
         # scanner async tasks
         tasks = [
@@ -63,6 +69,7 @@ async def run_full_scan(repo_url: str, repo_name: str, commit_sha: str) -> Dict:
         return aggregated
         
     except Exception as e:
+        print(e)
         logger.error(f"Scan failed: {str(e)}")
         return {
             'repo_name': repo_name,
@@ -70,7 +77,7 @@ async def run_full_scan(repo_url: str, repo_name: str, commit_sha: str) -> Dict:
             'error': str(e)
         }
 
-    #finally:
-    #    # Clean up: Delete cloned repo
-    #    logger.info(f"Cleaning up {temp_dir}")
-    #    shutil.rmtree(temp_dir, ignore_errors=True)
+    finally:
+        # Clean up: Delete cloned repo
+        logger.info(f"Cleaning up {temp_dir}")
+        shutil.rmtree(temp_dir, ignore_errors=True)
