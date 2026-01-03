@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Request, BackgroundTasks
 from typing import Dict
 import logging
-from app.services.orchestrator import run_full_scan
+from services.orchestrator import run_full_scan
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -36,8 +36,9 @@ async def github_webhook(request: Request, background_tasks: BackgroundTasks):
         logger.error(f"Webhook error: {str(e)}")
         return {"error": str(e)}, 500
 
+
 @router.get("/test")
-async def test_tebhook():`
+async def test_tebhook():
     test_repo = "https://github.com/CloudsWeight/ScanShark"
     result = await run_full_scan(
         repo_url=test_repo,
