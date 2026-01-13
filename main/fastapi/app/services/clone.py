@@ -1,7 +1,7 @@
 import git
 import os
 import uuid
-from scanners.bandit_scan import test_scan, scan
+from services.scanners.bandit import test_scan, scan
 import asyncio 
 import json
 def clone(url="https://github.com/CloudsWeight/ScanShark", folder_name="scan_repo"):
