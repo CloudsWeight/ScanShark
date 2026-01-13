@@ -8,10 +8,10 @@ import shutil
 import logging
 from pathlib import Path
 from typing import Dict, List
-from git import Repo,GitCommandError
+#from git import Repo,GitCommandError
 import os
 from datetime import datetime, timezone
-from .scanners import (
+from services.scanners import (
     bandit,
     semgrep,
     secrets,
